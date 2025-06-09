@@ -1,116 +1,94 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Placeholder_1 - Result</title>
+  <meta charset="UTF-8">
+  <title>Turtle Graphics Generator - Result</title>
   <style>
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      margin: 0; font-family: Arial, sans-serif; background: #f4f4f4;
     }
     nav {
-      background: #333;
-      color: white;
-      padding: 10px 20px;
-      font-size: 20px;
+      background: #333; color: white; padding: 1rem 2rem;
+      font-size: 1.5rem; cursor: pointer;
     }
     .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 20px;
-      gap: 20px;
+      display: flex; flex-wrap: wrap; gap: 2rem;
+      justify-content: center; align-items: flex-start;
+      padding: 2rem;
     }
     .card {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      max-width: 500px;
-      width: 100%;
+      background: white; padding: 1.5rem;
+      border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      flex: 1 1 400px; max-width: 45%;
+      display: flex; flex-direction: column;
+      align-items: center;
     }
     .image-card img {
-      max-width: 100%;
-      border-radius: 10px;
+      width: 100%; border-radius: 8px; margin-bottom: 1rem;
     }
     textarea {
-      width: 100%;
-      height: 300px;
-      resize: vertical;
-      font-family: monospace;
-      font-size: 14px;
-      padding: 10px;
-      border-radius: 10px;
-      background: #f0f0f0;
-      border: 1px solid #ccc;
+      width: 100%; height: 300px; resize: none;
+      font-family: monospace; font-size: 14px;
+      padding: 1rem; border-radius: 8px;
+      border: 1px solid #ccc; background: #fafafa;
     }
     button.copy-btn, .resubmit-btn {
-      margin-top: 10px;
-      padding: 8px 14px;
-      background: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s ease;
+      margin-top: 1rem; padding: 0.75rem 1.5rem;
+      background: #007BFF; color: white; border: none;
+      border-radius: 5px; cursor: pointer;
+      transition: background .3s ease;
     }
     button.copy-btn:disabled {
-      cursor: default;
-      background: #28a745;
+      background: #28a745; cursor: not-allowed;
     }
-    .resubmit {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      margin-top: 40px;
+    .resubmit-btn {
+      width: 100%; margin-top: 2rem;
+      background: #4A5568;
     }
   </style>
 </head>
 <body>
-  <nav onclick="window.location.href='/'">Placeholder_1</nav>
-
+  <nav onclick="location.href='/'">Turtle Graphics Generator</nav>
   <div class="container">
     <div class="card image-card">
-      <img id="turtleImage" src="/image" alt="Turtle Drawing">
+      <img src="/image" alt="Turtle Drawing">
       <button class="copy-btn" id="copyImageBtn" onclick="copyImage()">Copy Image</button>
     </div>
     <div class="card">
       <h3>Python Turtle Code</h3>
-      <textarea readonly id="codeBlock">{{ code }}</textarea>
+      <textarea id="codeBlock" readonly>{{ code }}</textarea>
       <button class="copy-btn" id="copyTextBtn" onclick="copyText()">Copy Code</button>
     </div>
   </div>
-
-  <div class="resubmit">
-    <button class="resubmit-btn" onclick="window.location.href='/'">Submit Another Image</button>
+  <div class="container">
+    <button class="resubmit-btn" onclick="location.href='/'">Submit Another Image</button>
   </div>
 
   <script>
     function copyText() {
-      const btn = document.getElementById("copyTextBtn");
-      const text = document.getElementById("codeBlock").value;
-      navigator.clipboard.writeText(text).then(() => {
-        animateButton(btn, "✔ Copied");
-      });
+      const btn = document.getElementById("copyTextBtn"),
+            text = document.getElementById("codeBlock").value;
+      navigator.clipboard.writeText(text).then(() =>
+        animate(btn, "✔ Copied")
+      );
     }
 
     function copyImage() {
       const btn = document.getElementById("copyImageBtn");
       fetch("/image")
         .then(res => res.blob())
-        .then(blob => {
-          const item = new ClipboardItem({ "image/png": blob });
-          navigator.clipboard.write([item]);
-          animateButton(btn, "✔ Copied");
-        });
+        .then(blob =>
+          navigator.clipboard.write([new ClipboardItem({ "image/png": blob })])
+            .then(() => animate(btn, "✔ Copied"))
+        );
     }
 
-    function animateButton(button, successText) {
-      const originalText = button.innerText;
-      button.innerText = successText;
+    function animate(button, msg) {
+      const orig = button.innerText;
+      button.innerText = msg;
       button.disabled = true;
       setTimeout(() => {
-        button.innerText = originalText;
+        button.innerText = orig;
         button.disabled = false;
       }, 1000);
     }

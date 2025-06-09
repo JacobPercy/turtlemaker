@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Placeholder_1</title>
+  <title>Turtle Graphics Generator</title>
   <style>
     body {
       font-family: sans-serif;
@@ -18,6 +18,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      cursor: pointer;
     }
 
     .container {
@@ -35,11 +36,12 @@
       border-radius: 20px;
       cursor: pointer;
       background-color: #fafafa;
-      background-image: url("drag.png");
+      background-image: url("/static/drag.png");
       background-repeat: no-repeat;
       background-position: center 30px;
       background-size: 80px;
       position: relative;
+      transition: border-color 0.3s, background-color 0.3s;
     }
 
     .upload-box.dragover {
@@ -51,28 +53,51 @@
       max-width: 100%;
       margin-top: 20px;
       display: none;
+      border-radius: 10px;
     }
 
     #submit-btn {
-      margin-top: 20px;
-      padding: 10px 20px;
+      margin-top: 30px;
+      padding: 12px 30px;
       font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .loader {
+      margin: 30px auto 0;
+      display: none;
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #007BFF;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <div class="top-bar">
-    <div onclick="location.href='/'" style="cursor:pointer">Placeholder_1</div>
+  <div class="top-bar" onclick="location.href='/'">
+    Turtle Graphics Generator
   </div>
 
   <div class="container">
     <form method="post" enctype="multipart/form-data" id="upload-form">
-      <input type="file" name="image" id="file-input" style="display:none;" required>
+      <input type="file" name="image" id="file-input" style="display:none;" accept="image/*" required>
       <div class="upload-box" id="drop-zone">
-        <p>Drag and drop an image here</p>
+        <p>Drag and drop an image here<br>or click to select</p>
       </div>
       <img id="uploaded-image" src="#" alt="Preview">
-      <button id="submit-btn" type="submit">Generate Drawing</button>
+      <button id="submit-btn" type="submit" disabled>Generate Drawing</button>
+      <div class="loader" id="loader"></div>
     </form>
   </div>
 
@@ -80,32 +105,56 @@
     const dropZone = document.getElementById("drop-zone");
     const fileInput = document.getElementById("file-input");
     const uploadedImage = document.getElementById("uploaded-image");
+    const submitBtn = document.getElementById("submit-btn");
+    const loader = document.getElementById("loader");
+    const form = document.getElementById("upload-form");
 
-    dropZone.addEventListener("dragover", e => {
-      e.preventDefault();
-      dropZone.classList.add("dragover");
+    // Allow clicking to upload
+    dropZone.addEventListener("click", () => fileInput.click());
+
+    // Drag and drop functionality
+    ["dragenter", "dragover"].forEach(eventName => {
+      dropZone.addEventListener(eventName, e => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+      });
     });
 
-    dropZone.addEventListener("dragleave", () => {
-      dropZone.classList.remove("dragover");
+    ["dragleave", "drop"].forEach(eventName => {
+      dropZone.addEventListener(eventName, () => {
+        dropZone.classList.remove("dragover");
+      });
     });
 
     dropZone.addEventListener("drop", e => {
       e.preventDefault();
-      dropZone.classList.remove("dragover");
-
       const file = e.dataTransfer.files[0];
-      if (!file) return;
+      if (file && file.type.startsWith("image/")) {
+        fileInput.files = e.dataTransfer.files;
+        previewImage(file);
+        submitBtn.disabled = false;
+      }
+    });
 
-      fileInput.files = e.dataTransfer.files;
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length > 0) {
+        previewImage(fileInput.files[0]);
+        submitBtn.disabled = false;
+      }
+    });
 
+    function previewImage(file) {
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = e => {
         uploadedImage.src = e.target.result;
         uploadedImage.style.display = "block";
         dropZone.style.display = "none";
       };
       reader.readAsDataURL(file);
+    }
+    form.addEventListener("submit", () => {
+      submitBtn.style.display = "none";
+      loader.style.display = "block";
     });
   </script>
 </body>
