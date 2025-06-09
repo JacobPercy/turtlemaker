@@ -1,11 +1,112 @@
 <!DOCTYPE html>
 <html>
-<head><title>Upload Image</title></head>
+<head>
+  <title>Placeholder_1</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .top-bar {
+      background: #333;
+      color: white;
+      padding: 1rem;
+      font-size: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .upload-box {
+      border: 3px dashed #ccc;
+      padding: 60px;
+      border-radius: 20px;
+      cursor: pointer;
+      background-color: #fafafa;
+      background-image: url("drag.png");
+      background-repeat: no-repeat;
+      background-position: center 30px;
+      background-size: 80px;
+      position: relative;
+    }
+
+    .upload-box.dragover {
+      border-color: #007bff;
+      background-color: #eef6ff;
+    }
+
+    #uploaded-image {
+      max-width: 100%;
+      margin-top: 20px;
+      display: none;
+    }
+
+    #submit-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
 <body>
-  <h2>Upload an Image</h2>
-  <form method="post" enctype="multipart/form-data">
-    <input type="file" name="image" required>
-    <button type="submit">Generate Drawing</button>
-  </form>
+  <div class="top-bar">
+    <div onclick="location.href='/'" style="cursor:pointer">Placeholder_1</div>
+  </div>
+
+  <div class="container">
+    <form method="post" enctype="multipart/form-data" id="upload-form">
+      <input type="file" name="image" id="file-input" style="display:none;" required>
+      <div class="upload-box" id="drop-zone">
+        <p>Drag and drop an image here</p>
+      </div>
+      <img id="uploaded-image" src="#" alt="Preview">
+      <button id="submit-btn" type="submit">Generate Drawing</button>
+    </form>
+  </div>
+
+  <script>
+    const dropZone = document.getElementById("drop-zone");
+    const fileInput = document.getElementById("file-input");
+    const uploadedImage = document.getElementById("uploaded-image");
+
+    dropZone.addEventListener("dragover", e => {
+      e.preventDefault();
+      dropZone.classList.add("dragover");
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("dragover");
+    });
+
+    dropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+
+      const file = e.dataTransfer.files[0];
+      if (!file) return;
+
+      fileInput.files = e.dataTransfer.files;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        uploadedImage.src = e.target.result;
+        uploadedImage.style.display = "block";
+        dropZone.style.display = "none";
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
 </body>
 </html>

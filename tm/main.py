@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw
 # Parameters
 min_size = 1000
 max_size = 2000
-num_segments = 2000
+num_segments = 3000
 compactness = 10
 fast_mode = True
 
@@ -90,6 +90,9 @@ def draw_polygon(t, polygon, color, img_width, img_height):
     t.penup()
 
 def generate_turtle_code(polygons, colors, width, height):
+    return "temp"
+
+    """
     lines = [
         "import turtle",
         f"screen = turtle.Screen()",
@@ -117,7 +120,9 @@ def generate_turtle_code(polygons, colors, width, height):
         lines.append("t.penup()")
 
     lines.append("turtle.done()")
+    return "TEST"
     return "\n".join(lines)
+    """
 
 def main(headless=False, image_path=None):
     if image_path is None:

@@ -1,15 +1,119 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Turtle Output</title>
+  <title>Placeholder_1 - Result</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+    nav {
+      background: #333;
+      color: white;
+      padding: 10px 20px;
+      font-size: 20px;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+    .image-card img {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+    textarea {
+      width: 100%;
+      height: 300px;
+      resize: vertical;
+      font-family: monospace;
+      font-size: 14px;
+      padding: 10px;
+      border-radius: 10px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+    }
+    button.copy-btn, .resubmit-btn {
+      margin-top: 10px;
+      padding: 8px 14px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button.copy-btn:disabled {
+      cursor: default;
+      background: #28a745;
+    }
+    .resubmit {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Generated Drawing</h1>
-    <img src="/image" alt="Generated Drawing" style="max-width: 90vw;">
+  <nav onclick="window.location.href='/'">Placeholder_1</nav>
 
-    <h2>Turtle Instructions</h2>
-    <pre><code>{{ turtle_code }}</code></pre>
+  <div class="container">
+    <div class="card image-card">
+      <img id="turtleImage" src="/image" alt="Turtle Drawing">
+      <button class="copy-btn" id="copyImageBtn" onclick="copyImage()">Copy Image</button>
+    </div>
+    <div class="card">
+      <h3>Python Turtle Code</h3>
+      <textarea readonly id="codeBlock">{{ code }}</textarea>
+      <button class="copy-btn" id="copyTextBtn" onclick="copyText()">Copy Code</button>
+    </div>
+  </div>
 
-    <a href="/">Upload another image</a>
+  <div class="resubmit">
+    <button class="resubmit-btn" onclick="window.location.href='/'">Submit Another Image</button>
+  </div>
+
+  <script>
+    function copyText() {
+      const btn = document.getElementById("copyTextBtn");
+      const text = document.getElementById("codeBlock").value;
+      navigator.clipboard.writeText(text).then(() => {
+        animateButton(btn, "✔ Copied");
+      });
+    }
+
+    function copyImage() {
+      const btn = document.getElementById("copyImageBtn");
+      fetch("/image")
+        .then(res => res.blob())
+        .then(blob => {
+          const item = new ClipboardItem({ "image/png": blob });
+          navigator.clipboard.write([item]);
+          animateButton(btn, "✔ Copied");
+        });
+    }
+
+    function animateButton(button, successText) {
+      const originalText = button.innerText;
+      button.innerText = successText;
+      button.disabled = true;
+      setTimeout(() => {
+        button.innerText = originalText;
+        button.disabled = false;
+      }, 1000);
+    }
+  </script>
 </body>
 </html>

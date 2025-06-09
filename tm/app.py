@@ -9,21 +9,24 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        file = request.files["image"]
+        if 'image' not in request.files:
+            return "No image uploaded", 400
 
-        for filename in os.listdir(UPLOAD_FOLDER):
-            file_path = os.path.join(UPLOAD_FOLDER, filename)
-            if os.path.isfile(file_path):
-                os.remove(file_path)
+        file = request.files["image"]
+        if file.filename == "":
+            return "Empty filename", 400
 
         img_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(img_path)
 
-        turtle_code = run_turtle_script(headless=True, image_path=img_path)
+        run_turtle_script(headless=True, image_path=img_path)
 
-        return render_template("result.html", turtle_code=turtle_code)
+        code= "temp"
+
+        return render_template("result.html", code=code)
 
     return render_template("upload.html")
+
 
 
 @app.route("/image")
