@@ -10,8 +10,8 @@ import base64
 # Parameters
 min_size = 1000
 max_size = 2000
-num_segments = 30
-compactness = 10
+num_segments = 3000
+compactness = 7
 fast_mode = True
 
 def resize_image_to_range(image, min_size, max_size):
@@ -109,30 +109,31 @@ def generate_turtle_code(polygons, colors, width, height):
 import base64
 import json
 
-# Decode polygon data
+#Decode polygon data
 encoded = "{encoded_data}"
 json_str = base64.b64decode(encoded.encode()).decode()
 data = json.loads(json_str)
 
-# Setup screen
+#Setup screen
 screen = turtle.Screen()
-screen.setup({width}, {height})
+screen.setup(1296, 800)
 screen.bgcolor("white")
 t = turtle.Turtle()
 t.speed(0)
 t.penup()
-t.hideturtle()
-turtle.tracer(0, 0)
+t.shape("turtle")
+t.shapesize(2, 2, 2)
+turtle.tracer(0, 0) #You can comment this out if you want to see the drawing process
 
-# Coordinate transform
+#Coordinate transform
 def to_turtle_coords(x, y):
     return x - {width} / 2, {height} / 2 - y
 
-# Draw each polygon
+#Draw each polygon
 for item in data:
     points = item["points"]
     color = item["color"]
-    hex_color = "#%02x%02x%02x" % (color[2], color[1], color[0])  # BGR to HEX
+    hex_color = "#%02x%02x%02x" % (color[2], color[1], color[0])
     t.fillcolor(hex_color)
     t.pencolor(hex_color)
     t.goto(to_turtle_coords(*points[0]))
@@ -143,6 +144,8 @@ for item in data:
     t.end_fill()
     t.penup()
 
+#Hide the turtle and finish
+t.hideturtle()
 turtle.update()
 turtle.done()'''
 

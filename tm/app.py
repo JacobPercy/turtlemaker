@@ -4,7 +4,10 @@ from main import main as run_turtle_script
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+print(os.listdir(UPLOAD_FOLDER))
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -32,4 +35,5 @@ def image():
     return send_file("turtle_polygons.png", mimetype="image/png")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000)
+
