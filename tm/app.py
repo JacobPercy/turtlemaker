@@ -21,6 +21,12 @@ def index():
 
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)
         img_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        #delete other files in the upload folder
+        for f in os.listdir(UPLOAD_FOLDER):
+            file_path = os.path.join(UPLOAD_FOLDER, f)
+            if os.path.isfile(file_path) and f != file.filename:
+                os.remove(file_path)
+
         file.save(img_path)
         code = run_turtle_script(headless=True, image_path=img_path)
         return render_template("result.html", code=code)
