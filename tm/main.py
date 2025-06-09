@@ -4,11 +4,13 @@ import sys
 import numpy as np
 from skimage.segmentation import slic
 from PIL import Image, ImageDraw
+import json
+import base64
 
 # Parameters
 min_size = 1000
 max_size = 2000
-num_segments = 3000
+num_segments = 30
 compactness = 10
 fast_mode = True
 
@@ -89,40 +91,62 @@ def draw_polygon(t, polygon, color, img_width, img_height):
     t.end_fill()
     t.penup()
 
+def encode_polygon_data(polygons, colors):
+    # Convert to standard format
+    data = [{
+        "points": polygon,
+        "color": [int(c) for c in color]  # Convert color from float to int
+    } for polygon, color in zip(polygons, colors)]
+    
+    json_str = json.dumps(data, separators=(",", ":"))  # Compact JSON
+    encoded = base64.b64encode(json_str.encode()).decode()
+    return encoded
+
 def generate_turtle_code(polygons, colors, width, height):
-    return "temp"
+    encoded_data = encode_polygon_data(polygons, colors)
 
-    """
-    lines = [
-        "import turtle",
-        f"screen = turtle.Screen()",
-        f"screen.setup({width}, {height})",
-        f"t = turtle.Turtle()",
-        "t.speed(0)",
-        "t.penup()"
-    ]
+    turtle_code = f'''import turtle
+import base64
+import json
 
-    for polygon, color in zip(polygons, colors):
-        hex_color = rgb_to_hex(color)
-        lines.append(f"t.pencolor('{hex_color}')")
-        lines.append(f"t.fillcolor('{hex_color}')")
-        x0, y0 = polygon[0]
-        x0 -= width / 2
-        y0 = height / 2 - y0
-        lines.append(f"t.goto({x0}, {y0})")
-        lines.append("t.begin_fill()")
-        for x, y in polygon[1:]:
-            x -= width / 2
-            y = height / 2 - y
-            lines.append(f"t.goto({x}, {y})")
-        lines.append(f"t.goto({x0}, {y0})")
-        lines.append("t.end_fill()")
-        lines.append("t.penup()")
+# Decode polygon data
+encoded = "{encoded_data}"
+json_str = base64.b64decode(encoded.encode()).decode()
+data = json.loads(json_str)
 
-    lines.append("turtle.done()")
-    return "TEST"
-    return "\n".join(lines)
-    """
+# Setup screen
+screen = turtle.Screen()
+screen.setup({width}, {height})
+screen.bgcolor("white")
+t = turtle.Turtle()
+t.speed(0)
+t.penup()
+t.hideturtle()
+turtle.tracer(0, 0)
+
+# Coordinate transform
+def to_turtle_coords(x, y):
+    return x - {width} / 2, {height} / 2 - y
+
+# Draw each polygon
+for item in data:
+    points = item["points"]
+    color = item["color"]
+    hex_color = "#%02x%02x%02x" % (color[2], color[1], color[0])  # BGR to HEX
+    t.fillcolor(hex_color)
+    t.pencolor(hex_color)
+    t.goto(to_turtle_coords(*points[0]))
+    t.begin_fill()
+    for x, y in points[1:]:
+        t.goto(to_turtle_coords(x, y))
+    t.goto(to_turtle_coords(*points[0]))
+    t.end_fill()
+    t.penup()
+
+turtle.update()
+turtle.done()'''
+
+    return turtle_code
 
 def main(headless=False, image_path=None):
     if image_path is None:

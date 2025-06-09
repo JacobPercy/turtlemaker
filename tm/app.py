@@ -16,16 +16,14 @@ def index():
         if file.filename == "":
             return "Empty filename", 400
 
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
         img_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(img_path)
-
-        run_turtle_script(headless=True, image_path=img_path)
-
-        code= "temp"
-
+        code = run_turtle_script(headless=True, image_path=img_path)
         return render_template("result.html", code=code)
 
     return render_template("upload.html")
+
 
 
 
