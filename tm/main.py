@@ -10,8 +10,8 @@ import base64
 # Parameters
 min_size = 1000
 max_size = 2000
-num_segments = 2000
-compactness = 2
+num_segments = 3000
+compactness = 5
 fast_mode = True
 
 def resize_image_to_range(image, min_size, max_size):
